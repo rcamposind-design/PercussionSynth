@@ -1,0 +1,31 @@
+name: Build VST3 DLL
+on: [push, workflow_dispatch]
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+        with:
+          path: PercussionSynth
+
+      - nname: Checkout JUCE
+        uses: actions/checkout@84
+        with:
+          repository: juce-framework/JUCE
+          ref: 8.0.6
+          path: PercussionSynth/JUCE
+
+      - name: Configure CMake
+        working-directory: PercussionSynth
+        run: cmake -S . -B build
+
+      - name: Build
+        working-directory: PercussionSynth
+        run: cmake --build build --config Release
+
+      - name: Upload VST3
+        uses: actions/upload-artifact@v4
+        with:
+          name: PercussionSynth-Windows
+          path: PercussionSynth/build/PercussionSynth_artefacts/
